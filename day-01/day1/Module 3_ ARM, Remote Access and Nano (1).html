@@ -1,0 +1,173 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Module 3: ARM, Remote Access and Nano</title>
+<style>
+:root{--navy:#005596;--navy-d:#1B2A41;--gold:#FDB515;--green:#1E8E3E;--red:#C3092B;--ink:#1d2530;--muted:#5b6675;--line:#d5dde6;--bg:#f6f8fb;--card:#fff;--tint:#EEF5FA;--ok:#E6F4EA;--bad:#FDECEE;--pl:#F5F0FF;--pu:#6B3FC9;--gl:#FFF5D6;--head:#005596;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){color-scheme:dark;--ink:#e6edf5;--muted:#a3b1c2;--line:#33445c;--bg:#0f1722;--card:#17212f;--tint:#1c2c40;--ok:#173a25;--bad:#3f1a21;--pl:#241b3d;--gl:#3a2f0f;--head:#7db8ee}}
+:root[data-theme="dark"]{color-scheme:dark;--ink:#e6edf5;--muted:#a3b1c2;--line:#33445c;--bg:#0f1722;--card:#17212f;--tint:#1c2c40;--ok:#173a25;--bad:#3f1a21;--pl:#241b3d;--gl:#3a2f0f;--head:#7db8ee}
+html{font-size:17px;scroll-padding-top:5rem}*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"Segoe UI",Arial,system-ui,sans-serif;line-height:1.45}
+code,.m{font-family:Consolas,Menlo,"DejaVu Sans Mono",monospace}code{background:var(--tint);padding:0 .25em;border-radius:4px;font-size:.92em}
+#top{position:sticky;top:env(safe-area-inset-top,0px);z-index:50;background:var(--navy-d);color:#fff;display:flex;gap:.5rem;align-items:center;padding:.35rem .8rem;flex-wrap:wrap}
+#top b span{color:var(--gold)}#nav{display:flex;gap:.25rem;flex-wrap:wrap;flex:1}
+#nav button,#tk{background:transparent;color:#cfe0f5;border:1px solid #3d5373;border-radius:999px;padding:.12rem .55rem;font-size:.78rem;cursor:pointer}
+#nav button.on{background:var(--gold);color:var(--navy-d);border-color:var(--gold);font-weight:700}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);background:var(--navy-d);z-index:49}
+main{max-width:1100px;margin:0 auto;padding:1rem 1rem 9rem}section.block{display:none}section.block.active{display:block}
+h1{color:var(--head);font-size:1.8rem;margin:.2rem 0}h2{color:var(--head);font-size:1.2rem;margin:.1rem 0 .4rem}.kick{color:var(--muted);margin:0 0 .8rem}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:1rem}@media(max-width:850px){.g2{grid-template-columns:1fr}}.g2>*{min-width:0}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:.8rem 1rem;margin-bottom:1rem}
+.key{background:var(--tint);border-left:6px solid var(--navy);border-radius:8px;padding:.5rem .9rem;margin:.5rem 0}
+.teach{border:2px solid var(--pu);background:var(--pl)}.teach h2{color:var(--pu)}.teach h2::before{content:"🍎 "}
+.tg{display:grid;grid-template-columns:repeat(4,1fr);gap:.5rem}@media(max-width:900px){.tg{grid-template-columns:1fr 1fr}}@media(max-width:560px){.tg{grid-template-columns:1fr}}
+.tg div{background:var(--card);border:1px solid var(--line);border-radius:8px;padding:.4rem .6rem;font-size:.9rem}.tg b{display:block;color:var(--pu);font-size:.8rem}
+.btn{background:var(--navy);color:#fff;border:0;border-radius:8px;padding:.35rem .8rem;font:inherit;font-size:.9rem;cursor:pointer;margin:.15rem .2rem .15rem 0}
+.btn:disabled{opacity:.4;cursor:not-allowed}.btn.p{background:var(--pu)}.btn.p.got{background:var(--green)}.btn.r{background:var(--red)}
+table{border-collapse:collapse;width:100%;font-size:.9rem}td,th{border:1px solid var(--line);padding:.25rem .5rem;text-align:left;vertical-align:top}th{background:var(--navy);color:#fff}
+.sc{border:1px solid var(--line);border-radius:8px;padding:.4rem .6rem;margin:.3rem 0;background:var(--card)}
+.sc button{border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:6px;padding:.1rem .5rem;margin:.2rem .2rem 0 0;cursor:pointer;font:inherit;font-size:.85rem}
+.sc button.ok,.sc.ok{background:var(--ok);border-color:var(--green)}.sc button.bad,.sc.bad{background:var(--bad);border-color:var(--red)}
+.why{font-size:.85rem;margin-top:.3rem}.hidden{display:none!important}
+.term{background:#0e1621;color:#e4ecf5;border-radius:10px;padding:.5rem .7rem;font-family:Consolas,Menlo,monospace;font-size:.85rem;min-height:9rem;max-height:16rem;overflow:auto;white-space:pre-wrap}
+.term input{background:transparent;border:0;border-bottom:1px solid #4a6286;color:#fff;font:inherit;width:70%;outline:0}
+.ed{border:2px solid var(--navy);border-radius:8px;padding:.4rem;margin-top:.4rem;background:var(--card)}.ed pre{margin:.2rem 0;min-height:2.2rem;white-space:pre-wrap}
+.ms{list-style:none;padding:0}.ms li{padding:.2rem .5rem .2rem 1.8rem;position:relative;border-radius:6px}.ms li::before{content:"☐";position:absolute;left:.4rem}.ms li.ok{background:var(--ok)}.ms li.ok::before{content:"✅"}
+input.t{font:inherit;padding:.2rem .4rem;border:1px solid var(--line);border-radius:6px;background:var(--card);color:var(--ink);width:9rem}
+.spot{outline:4px solid var(--gold);outline-offset:3px}
+#bar{position:fixed;left:0;right:0;bottom:0;z-index:60;background:var(--navy-d);color:#fff;padding-bottom:env(safe-area-inset-bottom,0px)}
+#guide{display:none;background:#14202f;padding:.6rem 1rem;max-height:40vh;overflow:auto;font-size:.92rem}body.go #guide{display:block}
+#guide b{color:var(--gold)}.row{display:flex;gap:.5rem;align-items:center;padding:.4rem .7rem}.row>button{background:var(--gold);color:var(--navy-d);border:0;border-radius:10px;font-size:1.2rem;font-weight:800;width:2.8rem;height:2.4rem;cursor:pointer}
+.row>button:disabled{opacity:.3}.row>button.t{width:auto;font-size:.85rem;padding:0 .7rem;background:#2c3e5a;color:#fff}.row div{flex:1;font-size:.9rem}
+:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+.il{width:100%;max-width:560px;height:auto;display:block;margin:.4rem auto}.il text{fill:var(--ink);font:12px "Segoe UI",Arial,sans-serif}.il rect{stroke-width:1.5}.il .a{fill:var(--tint);stroke:var(--navy)}.il .b{fill:var(--gl);stroke:var(--gold)}.il .c{fill:var(--ok);stroke:var(--green)}.il .d{fill:var(--bad);stroke:var(--red)}.il .k{fill:#0e1621;stroke:#4a6286}.il text.t{fill:#e4ecf5}
+</style></head><body>
+<div id="top"><b>TP · Module 3 <span>·</span> Study session</b><nav id="nav"></nav><button id="tk">🍎 Toolkit <b id="tkn">0</b>/4</button></div>
+<main>
+
+<section class="block" data-title="ARM vs x86">
+<h1>🧠 Part 1: The ARM architecture</h1><p class="kick">Unit 3.1. One question for the whole part: <b>why is ARM in your phone and the Raspberry Pi, but x86 in many desktops?</b></p>
+<div class="g2">
+<div class="card" data-step="Define ARM" data-say="ARM chips use a <b>reduced instruction set (RISC)</b>: simple instructions, one per CPU cycle. x86 uses <b>CISC</b>: complex instructions over many cycles.|Arm Holdings <b>designs</b> the chip and <b>licenses</b> it. It does not manufacture or sell CPUs." data-do="Read the box.|Say in one sentence what <i>RISC</i> means.">
+<h2>What is ARM?</h2><p><b>ARM</b> is a family of processors built on the <b>RISC</b> idea. Arm Holdings designs them and <b>licenses</b> the design to other companies, who make the chips.</p>
+<div class="key"><b>RISC</b>: simple instructions, quick to run, little power and heat.<br><b>CISC</b> (Intel/AMD x86): complex instructions that take many cycles, more power and heat.</div>
+<div id="i1"></div><p><b>Benefits of ARM:</b> small size, low energy, little heat, tightly coupled memory (fast, good for real-time tasks), and cheaper chips.</p></div>
+<div class="card" data-step="Sort: ARM or x86?" data-say="Each learner sorts the statements alone, then compares with a partner.|Wrong answers show the reason straight away." data-do="Click ARM or x86 for each statement.|Aim for 7 out of 7."><h2>Sort: ARM or x86?</h2><div id="g1"></div></div></div>
+<div class="card" data-step="Design, build, profiles" data-say="Three stages: choose the architecture, design the CPU, then lay out and build it (wafer, dies, assembly).|Three profiles: <b>A</b> application, <b>R</b> real-time, <b>M</b> microcontroller." data-do="Read the stages.|Match each device to a profile."><h2>How ARM chips are made, and the three profiles</h2>
+<ol><li><b>Select</b> the architecture for the implementation.</li><li><b>Design</b> the CPU: schematics, transistors, logic gates, clocking.</li><li><b>Build</b> it: fabricate transistors on a silicon wafer, extract the dies, assemble the CPU.</li></ol>
+<div id="i2"></div><p><b>Software must be adapted:</b> x86 programs do not run natively on ARM. Developers recompile or <i>cross-compile</i> them, and watch endianness and libraries.</p><h3>Which profile fits?</h3><div id="g2"></div></div>
+<div class="card" id="cp1" data-step="Checkpoint" data-say="Learners must get all 3 right to unlock Part 2.|A wrong answer sends them back to the exact step to review." data-do="Answer the 3 questions and press Check.|If you miss one, use the Review button, then try again."></div>
+<div class="card teach" data-step="🍎 Teach it: contrasting cases" data-tk="contrast" data-say="<b>Contrasting cases</b>: show ARM and x86 side by side on the same criteria.|Learners notice what matters because the two are next to each other." data-do="Read the card.|Add it to your toolkit."><h2>How to teach this: Contrasting cases</h2>
+<div class="tg"><div><b>Technique</b>Put two things side by side. Ask: what’s the same, what’s different, when is each better?</div><div><b>Why it works</b>Comparing builds understanding of criteria like power, heat and speed, not just facts.</div><div><b>In class</b>Half the class lists ARM facts, half lists x86 facts. Merge them into Table 3.1.</div><div><b>Watch out</b>Don’t say one is “better”. Each fits a different job.</div></div><button class="btn p tkadd">＋ Add to my toolkit</button></div>
+</section>
+
+<section class="block" data-title="Remote access">
+<h1>🌐 Part 2: Remote access with SSH and VNC</h1><p class="kick">Unit 3.2. Same Raspberry Pi, two ways to reach it.</p>
+<div class="g2"><div class="card" data-step="Remote access" data-say="<b>Remote access</b> = using a device from another device, over a network.|Pi examples: edit a robot’s code, manage IoT devices, update road signs." data-do="List one reason someone would use remote access.">
+<h2>What and why</h2><p><b>Remote access</b> is the ability to access a computing device from another device in a remote location, over a network.</p><ul><li>IT support connects to an employee’s computer.</li><li>Staff work off-site on the office network.</li><li>Students use powerful lab computers from home.</li><li>Files are shared between devices.</li></ul><p><b>On a Raspberry Pi:</b> edit a robot’s program, control smart-home IoT devices, update electronic road signs in real time.</p><div class="key">Risk: others can also get in. <b>Secure it</b> when you set it up.</div></div>
+<div class="card" data-step="SSH vs VNC" data-say="SSH: command line, encrypted, port 22, less bandwidth.|VNC: the whole graphical desktop, port 5900, mouse and keyboard.|Note: the textbook calls VNC unencrypted. Teach ‘less secure than SSH’ and check your own setup." data-do="Find two differences in the table."><h2>SSH vs VNC</h2><div id="i3"></div>
+<table><tr><th></th><th>SSH</th><th>VNC</th></tr><tr><td>Interface</td><td>Command line</td><td>Graphical (GUI)</td></tr><tr><td>Reaches</td><td>Single applications</td><td>Whole remote desktop</td></tr><tr><td>Port</td><td>22</td><td>5900 (RFB)</td></tr><tr><td>Security</td><td>Encrypted, public-key</td><td>Textbook: unencrypted</td></tr><tr><td>Plus</td><td>Secure, light on bandwidth</td><td>Platform independent, shared desktop, many users</td></tr><tr><td>Client</td><td>A terminal</td><td>RealVNC viewer</td></tr></table></div></div>
+<div class="card" data-step="Pick the protocol" data-say="Scenario cards: learners decide SSH or VNC and justify in one phrase." data-do="Choose SSH or VNC for each scenario."><h2>Which one would you use?</h2><div id="g3"></div></div>
+<div class="card" id="cp2" data-step="Checkpoint" data-say="All 3 correct unlocks Part 3.|Misses link back to the step that explains them." data-do="Answer, press Check, review any missed step, retry."></div>
+<div class="card teach" data-step="🍎 Teach it: scenario cards" data-tk="scen" data-say="<b>Scenario decision cards</b>: real situations, learners choose and justify." data-do="Read the card.|Add it to your toolkit."><h2>How to teach this: Scenario decision cards</h2>
+<div class="tg"><div><b>Technique</b>Give short real-life cases. Learners pick the best option and give a reason.</div><div><b>Why it works</b>It moves learners from definitions to choosing, which is how exams and jobs test it.</div><div><b>In class</b>Groups write 3 scenarios, swap with another group, then answer.</div><div><b>Watch out</b>Avoid scenarios where both answers work. Include one that needs a trade-off.</div></div><button class="btn p tkadd">＋ Add to my toolkit</button></div>
+</section>
+
+<section class="block" data-title="Nano lab">
+<h1>⌨️ Part 3: Edit a file with Nano</h1><p class="kick">Unit 3.3. Type real commands in the practice terminal. No Pi needed.</p>
+<div class="card" data-step="Commands" data-say="A terminal editor works over SSH, where there is no mouse or desktop.|Walk through the table before the lab." data-do="Read the command table."><h2>Why Nano, and the commands</h2><p>Over SSH you only have a terminal, so you edit files with a <b>terminal editor</b> like Nano.</p><div id="i4"></div>
+<table><tr><th>Task</th><th>Command or key</th></tr><tr><td>Install Nano</td><td><code>sudo apt install nano</code></td></tr><tr><td>Create a file</td><td><code>touch notes.txt</code></td></tr><tr><td>Backup first</td><td><code>cp notes.txt notes.bak</code></td></tr><tr><td>Open the file</td><td><code>nano notes.txt</code></td></tr><tr><td>Search (exact match)</td><td><kbd>Ctrl</kbd>+<kbd>W</kbd></td></tr><tr><td>Save and quit</td><td><kbd>Ctrl</kbd>+<kbd>X</kbd>, then <kbd>Y</kbd></td></tr><tr><td>Quit without saving</td><td><kbd>Ctrl</kbd>+<kbd>X</kbd>, then <kbd>N</kbd></td></tr></table></div>
+<div class="g2" data-step="Terminal lab" data-say="Pairs: driver types, navigator reads the checklist. Swap after each mission.|Order matters: Nano isn’t found until it’s installed." data-do="Type each command and press Enter.|Complete all 8 missions."><div class="card"><h2>Missions</h2><ul class="ms" id="ms"><li data-m="i">Install Nano</li><li data-m="t">Create <code>notes.txt</code> with touch</li><li data-m="c">Back it up with cp</li><li data-m="o">Open it with Nano</li><li data-m="e">Change the content</li><li data-m="s">Search for the word <code>Pi</code></li><li data-m="n">Quit without saving</li><li data-m="y">Reopen, edit, save and quit</li></ul><p class="why">Stuck? Type <code>ls</code> to list files, <code>help</code> for hints.</p></div>
+<div class="card"><h2>Practice terminal</h2><div class="term" id="term"></div><div id="ed"></div></div></div>
+<div class="card" id="cp3" data-step="Checkpoint" data-say="Two conditions unlock Part 4: all 3 answers right <b>and</b> all 8 terminal missions done." data-do="Finish the missions, then answer the 3 questions."></div>
+<div class="card teach" data-step="🍎 Teach it: fading prompts" data-tk="fade" data-say="<b>Worked example, then fade the help</b>: show every command first, then hide them." data-do="Read the card.|Add it to your toolkit."><h2>How to teach this: Fading prompts</h2>
+<div class="tg"><div><b>Technique</b>Demo the full task. Next round, give only the checklist. Last round, give only the goal.</div><div><b>Why it works</b>Typing commands from memory builds recall. Support is removed step by step.</div><div><b>In class</b>Round 1: commands visible. Round 2: just the missions. Round 3: “Back up and edit a file”.</div><div><b>Watch out</b>Typos are common. Teach reading the error message instead of retyping blindly.</div></div><button class="btn p tkadd">＋ Add to my toolkit</button></div>
+</section>
+
+<section class="block" data-title="Exit ticket">
+<h1>🏁 Part 4: Exit ticket and toolkit</h1>
+<div class="card" data-step="Exit ticket" data-say="Six questions, one attempt, no conferring." data-do="Answer all six, then lock in."><h2>One attempt only</h2><div id="quiz"></div><button class="btn r" id="lock" disabled>🔒 Lock in my answers</button> <span class="why" id="left"></span><div id="res" class="key hidden"></div></div>
+<div class="card teach" data-step="My toolkit" data-tk="retr" data-say="Four techniques: contrasting cases, scenario cards, fading prompts, retrieval practice.|Which will you try first?" data-do="Add this last technique.|Check your toolkit."><h2>How to teach this: Retrieval practice</h2>
+<div class="tg"><div><b>Technique</b>A short quiz with no notes at the end of a lesson.</div><div><b>Why it works</b>Pulling answers from memory strengthens it more than re-reading.</div><div><b>In class</b>Five questions, answered on paper, then marked together.</div><div><b>Watch out</b>Keep it low-stakes. Use wrong answers to plan the next lesson.</div></div><button class="btn p tkadd">＋ Add to my toolkit</button>
+<h3>My teaching toolkit</h3><ul id="tkl"></ul></div>
+</section>
+</main>
+<div id="bar"><div id="guide"></div><div class="row"><button id="pv" aria-label="Previous step">◀</button><div id="st"></div><button class="t" id="gb">▲ Guide</button><button id="nx" aria-label="Next step">▶</button></div></div>
+<script>
+(function(){"use strict";
+const $=(s,r=document)=>r.querySelector(s),$$=(s,r=document)=>Array.from(r.querySelectorAll(s));
+const S={get(k,d){try{const v=localStorage.getItem("m3-"+k);return v===null?d:JSON.parse(v)}catch(e){return d}},set(k,v){try{localStorage.setItem("m3-"+k,JSON.stringify(v))}catch(e){}}};
+const B=$$("section.block"),ST=B.map(b=>$$("[data-step]",b));let cur=0,pos=B.map(()=>0);const ps=S.get("ps",[]);const ok=j=>!!ps[j]&&(j!==2||M.size>=8);const lim=()=>{for(let j=0;j<B.length-1;j++)if(!ok(j))return j;return B.length-1};
+function nav(){$("#nav").innerHTML="";B.forEach((b,i)=>{const x=document.createElement("button");x.textContent=(i+1)+" "+b.dataset.title+(i>lim()?" 🔒":(i<lim()?" ✓":""));x.className=i===cur?"on":"";x.onclick=()=>show(i,0);$("#nav").appendChild(x)})}
+function paint(){$$(".spot").forEach(e=>e.classList.remove("spot"));const k=pos[cur],e=ST[cur][k];e.classList.add("spot");
+$("#st").innerHTML="Part "+(cur+1)+" of "+B.length+" · step "+(k+1)+" of "+ST[cur].length+(cur<B.length-1&&!ok(cur)?" · 🔒 pass the checkpoint to unlock Part "+(cur+2):"");
+const l=t=>"<ul>"+(t||"").split("|").map(x=>"<li>"+x+"</li>").join("")+"</ul>";
+$("#guide").innerHTML="<b>🎤 Explain</b>"+l(e.dataset.say)+"<b>✅ Do now</b>"+l(e.dataset.do);
+$("#pv").disabled=cur===0&&k===0;$("#nx").disabled=cur===B.length-1&&k===ST[cur].length-1}
+function show(i,k){if(i>lim()){i=lim();k=0}cur=i;B.forEach((b,j)=>b.classList.toggle("active",j===i));pos[i]=k<0?ST[i].length-1:k;nav();paint();ST[i][pos[i]].scrollIntoView({behavior:"smooth",block:"start"})}
+function go(d){const k=pos[cur]+d;if(k<0){if(cur>0)show(cur-1,-1)}else if(k>=ST[cur].length){if(cur<B.length-1){if(ok(cur))show(cur+1,0);else{const c=$("#cp"+(cur+1));c&&c.scrollIntoView({behavior:"smooth",block:"center"});$("#st").innerHTML="🔒 Pass the checkpoint to continue"}}}else{pos[cur]=k;paint();ST[cur][k].scrollIntoView({behavior:"smooth",block:"start"})}}
+$("#pv").onclick=()=>go(-1);$("#nx").onclick=()=>go(1);
+$("#gb").onclick=()=>{document.body.classList.toggle("go");$("#gb").textContent=document.body.classList.contains("go")?"▼ Guide":"▲ Guide"};
+document.addEventListener("keydown",e=>{if(/input|textarea/i.test(e.target.tagName))return;if(e.key==="ArrowRight")go(1);if(e.key==="ArrowLeft")go(-1)});
+function game(id,opts,items){const h=$(id);let n=0,ok=0;const sc=document.createElement("p");
+items.forEach(([t,a,w])=>{const d=document.createElement("div");d.className="sc";d.innerHTML="<span>"+t+"</span><div>"+opts.map((o,i)=>'<button data-i="'+i+'">'+o+"</button>").join("")+'</div><div class="why hidden">'+w+"</div>";
+$$("button",d).forEach(b=>b.onclick=()=>{if(d.dataset.d)return;d.dataset.d=1;const g=+b.dataset.i===a;b.classList.add(g?"ok":"bad");d.classList.add(g?"ok":"bad");$(".why",d).classList.remove("hidden");n++;ok+=g;sc.textContent=ok+" / "+items.length+" correct"+(n===items.length?" ✔ Done!":"")});h.appendChild(d)});h.appendChild(sc)}
+game("#g1",["ARM","x86"],[["Uses the reduced instruction set (RISC).",0,"RISC means simple instructions."],["Executes complex instructions over many CPU cycles.",1,"That is CISC, used by Intel and AMD."],["Needs more memory but fewer transistors.",0,"Simple instructions need less chip space."],["Generates a lot of heat and needs a lot of power.",1,"The extra transistors cost power and heat."],["Used in smartphones, tablets and the Raspberry Pi.",0,"Low power makes ARM ideal for small devices."],["Emphasises a hardware-based approach to performance.",1,"ARM relies more on software."],["Emphasises a software-based approach to performance.",0,"The compiler does more of the work."]]);
+game("#g2",["A-profile","R-profile","M-profile"],[["A smartphone running a rich operating system.",0,"A = Application, highest performance."],["A car’s braking system that must react on time.",1,"R = Real-time, safety-critical."],["A tiny wearable sensor with a very small battery.",2,"M = Microcontroller, low power and small."]]);
+game("#g3",["SSH","VNC"],[["Edit a robot’s Python file from a terminal on a slow connection.",0,"Command line, light on bandwidth."],["See and use the Pi’s desktop with the mouse.",1,"VNC shares the graphical interface."],["Connect securely using port 22.",0,"Port 22 is SSH."],["Two students watch the same remote desktop together.",1,"VNC allows multiple users on one desktop."],["The Pi has no screen and you only need to run commands.",0,"A terminal is enough: use SSH."]]);
+/* terminal */
+const T={inst:false,f:{},log:["Practice terminal. Type a command.\n"],m:null,buf:"",dirty:false,asks:false,found:""};
+const M=new Set();function mis(k){M.add(k);nav();const li=$('[data-m="'+k+'"]');li&&li.classList.add("ok")}
+const term=$("#term"),ed=$("#ed");
+function out(s){T.log.push(s+"\n")}
+function draw(){term.innerHTML="";const p=document.createElement("div");p.textContent=T.log.join("");term.appendChild(p);
+if(!T.m){const l=document.createElement("div");l.innerHTML='pi@raspberrypi:~ $ <input id="cmd" aria-label="Command" autocomplete="off" spellcheck="false">';term.appendChild(l);const i=$("#cmd");i.focus({preventScroll:true});i.onkeydown=e=>{if(e.key==="Enter"){run(i.value.trim())}}}
+term.scrollTop=term.scrollHeight;
+if(T.m){ed.innerHTML='<div class="ed"><b>GNU nano: '+T.m+'</b><pre>'+(T.buf||"(empty file)").replace(/</g,"&lt;")+'</pre><button class="btn" id="e1">Type text</button><button class="btn" id="e2">Ctrl+W search</button><button class="btn" id="e3">Ctrl+X exit</button>'+(T.asks?'<p>Save modified buffer? <button class="btn green" id="y">Y</button><button class="btn r" id="n">N</button><button class="btn" id="cx">Cancel</button></p>':"")+(T.found?'<p class="why">'+T.found+'</p>':"")+'</div>';
+$("#e1").onclick=()=>{T.buf+="Raspberry Pi backup test\n";T.dirty=true;T.found="";mis("e");draw()};
+$("#e2").onclick=()=>{const w=prompt("Search for:");if(w===null)return;T.found=T.buf.includes(w)?"Found “"+w+"”.":"[ “"+w+"” not found ]";if(T.buf.includes(w)&&w==="Pi")mis("s");draw()};
+$("#e3").onclick=()=>{if(T.dirty){T.asks=true;draw()}else close(false)};
+if(T.asks){$("#y").onclick=()=>close(true);$("#n").onclick=()=>{mis("n");close(false)};$("#cx").onclick=()=>{T.asks=false;draw()}}}else ed.innerHTML=""}
+function close(save){if(save){T.f[T.m]=T.buf;if(T.buf)mis("y")}T.log.push("pi@raspberrypi:~ $ ("+(save?"saved":"closed without saving")+")\n");T.m=null;T.asks=false;T.dirty=false;T.found="";draw()}
+function run(c){T.log.push("pi@raspberrypi:~ $ "+c+"\n");const a=c.split(/\s+/);
+if(c==="ls")out(Object.keys(T.f).join("  ")||"(no files)");
+else if(c==="help")out("Try: sudo apt install nano · touch notes.txt · cp notes.txt notes.bak · nano notes.txt");
+else if(/^sudo apt(-get)? install nano$/.test(c)){T.inst=true;out("nano is installed.");mis("i")}
+else if(a[0]==="touch"&&a[1]){if(!(a[1] in T.f))T.f[a[1]]="";out("");if(a[1]==="notes.txt")mis("t")}
+else if(a[0]==="cp"&&a[1]&&a[2]){if(a[1] in T.f){T.f[a[2]]=T.f[a[1]];out("");mis("c")}else out("cp: cannot stat ‘"+a[1]+"’: No such file. Create it with touch first.")}
+else if(a[0]==="nano"&&a[1]){if(!T.inst)out("bash: nano: command not found. Install it first.");else{T.m=a[1];T.buf=T.f[a[1]]||"";mis("o")}}
+else if(c)out("bash: "+a[0]+": command not found. Type help for hints.");
+draw()}
+draw();
+/* toolkit + quiz */
+const TK=[["contrast","Contrasting cases"],["scen","Scenario decision cards"],["fade","Fading prompts"],["retr","Retrieval practice"]];const tk=new Set(S.get("tk",[]));
+function ptk(){$("#tkn").textContent=tk.size;$$(".tkadd").forEach(b=>{const g=tk.has(b.closest("[data-tk]").dataset.tk);b.classList.toggle("got",g);b.textContent=g?"✔ In my toolkit":"＋ Add to my toolkit"});$("#tkl").innerHTML=TK.map(([k,t])=>"<li>"+(tk.has(k)?"🍎 ":"☐ ")+t+"</li>").join("")}
+$$(".tkadd").forEach(b=>b.onclick=()=>{const k=b.closest("[data-tk]").dataset.tk;tk.has(k)?tk.delete(k):tk.add(k);S.set("tk",[...tk]);ptk()});
+$("#tk").onclick=()=>show(3,1);ptk();
+const Q=[["Who actually manufactures ARM-based chips?",["Arm Holdings","Companies that license the design","Only Intel"],1],["Which instruction set does ARM use?",["RISC","CISC","Neither"],0],["Which protocol gives a secure command line on port 22?",["SSH","VNC","RFB"],0],["Which protocol shows the Pi’s graphical desktop?",["SSH","VNC","Nano"],1],["Which command makes a backup before editing?",["cp notes.txt notes.bak","touch notes.txt","nano notes.txt"],0],["You changed a file in Nano but want to throw the changes away. After Ctrl+X you press…",["Y","N","Ctrl+W"],1]];
+let pk=S.get("pk",{}),lk=S.get("lk",null);if(lk)pk=lk.p;
+function pq(){const h=$("#quiz");h.innerHTML="";Q.forEach(([q,o,a],qi)=>{const d=document.createElement("div");d.className="sc";d.innerHTML="<b>"+(qi+1)+". "+q+"</b><div>"+o.map((x,i)=>'<button data-i="'+i+'" class="'+(pk[qi]===i?"sel":"")+'"'+(lk?" disabled":"")+">"+x+"</button>").join("")+"</div>";
+$$("button",d).forEach(b=>{const i=+b.dataset.i;if(pk[qi]===i)b.style.outline="3px solid var(--navy)";if(lk){if(i===a)b.classList.add("ok");else if(pk[qi]===i)b.classList.add("bad")}b.onclick=()=>{if(lk)return;pk[qi]=i;S.set("pk",pk);pq()}});h.appendChild(d)});
+const left=Q.length-Object.keys(pk).length;$("#lock").disabled=!!lk||left>0;$("#left").textContent=lk?"":(left?left+" still to answer":"Ready to lock in.");
+if(lk){$("#lock").classList.add("hidden");const r=$("#res");r.classList.remove("hidden");const QP=[0,0,1,1,2,2];r.innerHTML="<b>Score: "+lk.s+" / "+Q.length+"</b> · "+tk.size+" / 4 techniques collected.<br>"+Q.map((q,i)=>pk[i]===q[2]?"":'<button class="btn r" data-r="'+QP[i]+'">↩ Missed Q'+(i+1)+": review Part "+(QP[i]+1)+"</button>").join("");$$("[data-r]",r).forEach(b=>b.onclick=()=>show(+b.dataset.r,0))}}
+$("#lock").onclick=()=>{if(!confirm("Lock in? No changes after this."))return;const s=Q.filter((q,i)=>pk[i]===q[2]).length;lk={p:{...pk},s};S.set("lk",lk);pq()};
+const R=(x,y,w,h,c,t)=>'<rect class="'+c+'" x="'+x+'" y="'+y+'" width="'+w+'" height="'+h+'" rx="5"/><text'+(c==="k"?' class="t"':"")+' x="'+(x+w/2)+'" y="'+(y+h/2+4)+'" text-anchor="middle">'+t+"</text>";
+const X=(x,y,t,b,c)=>'<text'+(c?' class="'+c+'"':"")+' x="'+x+'" y="'+y+'"'+(b?' font-weight="700"':"")+">"+t+"</text>";
+const V=(id,h,al,body)=>{$(id).innerHTML='<svg class="il" viewBox="0 0 520 '+h+'" role="img" aria-label="'+al+'">'+body+"</svg>"};
+V("#i1",175,"RISC runs one simple instruction per cycle, CISC runs one complex instruction over many cycles",X(10,16,"RISC (ARM): simple steps, one per cycle",1)+["LOAD","ADD","MOV","SUB","STORE","JMP"].map((t,i)=>R(10+i*84,24,76,30,"c",t)).join("")+X(10,76,"6 instructions = 6 short cycles: low power, little heat")+X(10,110,"CISC (x86): one complex instruction, many cycles",1)+R(10,118,500,30,"d","ONE complex instruction")+X(10,168,"cycle 1 … cycle 2 … cycle 3 … cycle 4: more power and heat"));
+V("#i2",80,"Arm designs and licenses, chip makers build, devices use the chips",R(10,12,120,40,"a","Arm designs")+X(136,36,"licence ➜")+R(200,12,120,40,"b","Chip maker builds")+X(328,36,"chips ➜")+R(390,12,120,40,"c","Phone, Pi, PC")+X(200,72,"wafer → dies → assembled CPU"));
+V("#i3",140,"SSH gives a secure command line on port 22, VNC shows the whole desktop on port 5900",R(10,20,90,70,"a","Raspberry Pi")+R(420,20,90,70,"a","Your PC")+R(108,24,304,28,"c","SSH · port 22 · secure · commands")+R(108,58,304,28,"b","VNC · port 5900 · whole desktop")+X(10,116,"SSH: type commands in a terminal. VNC: see and click the Pi’s desktop."));
+V("#i4",170,"Nano screen: Ctrl+O saves, Ctrl+W searches, Ctrl+X exits",R(10,8,500,152,"k","")+X(22,28,"GNU nano   notes.txt",0,"t")+X(22,56,"Raspberry Pi backup test",0,"t")+X(22,100,"^ means the Ctrl key",0,"t")+R(20,112,150,34,"b","^O Write Out = save")+R(180,112,150,34,"a","^W Where Is = search")+R(340,112,160,34,"d","^X Exit = quit"));
+function cp(p,qs){const h=$("#cp"+(p+1));h.innerHTML='<h2>✔ Checkpoint: show you understood</h2><p class="why">Get all '+qs.length+' right to unlock Part '+(p+2)+'. A miss sends you back to the step that explains it.</p><div></div><button class="btn">Check my answers</button><div></div>';const box=h.children[2],fb=h.children[4],pk={};
+qs.forEach(([q,o],qi)=>{const d=document.createElement("div");d.className="sc";d.innerHTML="<b>"+q+"</b><div>"+o.map(x=>"<button>"+x+"</button>").join("")+"</div>";$$("button",d).forEach((b,i)=>b.onclick=()=>{pk[qi]=i;d.className="sc";$$("button",d).forEach((y,j)=>y.style.outline=j===i?"3px solid var(--navy)":"")});box.appendChild(d)});
+if(ok(p))fb.innerHTML="✅ Passed. Part "+(p+2)+" is unlocked.";
+$("button.btn",h).onclick=()=>{const miss=[];qs.forEach(([q,o,a,s,l],qi)=>{const g=pk[qi]===a;box.children[qi].className="sc "+(pk[qi]===undefined?"":g?"ok":"bad");if(!g)miss.push([s,l])});
+if(!miss.length){ps[p]=true;S.set("ps",ps);fb.innerHTML=ok(p)?"✅ Passed! Part "+(p+2)+" is unlocked. Press ▶.":"✅ All correct. Now finish the 8 missions in the Terminal lab to unlock Part "+(p+2)+".";nav();paint()}
+else fb.innerHTML="<p><b>Not yet. Review, then try again:</b></p>"+miss.map(([s,l])=>'<button class="btn r" data-s="'+s+'">↩ Review: '+l+"</button>").join("");$$("[data-s]",fb).forEach(b=>b.onclick=()=>show(p,+b.dataset.s))}}
+cp(0,[["What does RISC stand for?",["Reduced instruction set computing","Rapid internal system code","Remote instruction signal chip"],0,0,"What is ARM?"],["A laptop battery lasts all day and stays cool. Which design is most likely inside?",["x86 (CISC)","ARM (RISC)","Neither"],1,1,"Sort: ARM or x86?"],["Who builds the actual ARM chips?",["Arm Holdings","Companies that license the design","Nobody, ARM is only software"],1,2,"Design, build, profiles"]]);
+cp(1,[["Which is an example of remote access?",["Fixing a robot’s code on a Pi from another computer","Plugging a keyboard into the Pi","Printing a page"],0,0,"Remote access"],["Which statement is true?",["VNC uses port 22","SSH gives a command line","SSH shows the whole desktop"],1,1,"SSH vs VNC"],["Your Pi has no screen and the link is slow. You only need to run commands. Best choice?",["SSH","VNC","Neither"],0,2,"Pick the protocol"]]);
+cp(2,[["Which command creates an empty file?",["touch notes.txt","cp notes.txt","nano -d"],0,0,"Commands"],["Which keys search inside Nano?",["Ctrl+W","Ctrl+S","Ctrl+F"],0,0,"Commands"],["You changed text by mistake. After Ctrl+X, which key leaves without saving?",["Y","N","Ctrl+W"],1,1,"Terminal lab"]]);
+pq();show(0,0);
+})();
+</script></body></html>
